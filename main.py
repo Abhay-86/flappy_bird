@@ -6,14 +6,17 @@ from pygame.locals import *
 from random import *
 import argparse
 
+
 pygame.init()
 
 clock = pygame.time.Clock()
 # fps could be changed to change speed of learning (without any repercussions)
 fps = 60
 
+
 screen_width = 864
 screen_height = 936
+
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Flappy Bird")
@@ -34,6 +37,7 @@ FONT = pygame.font.SysFont('urwgothic', 60)
 # Color
 WHITE = (255, 255, 255)
 
+
 bg = pygame.image.load('img/bg.png')
 ground_img = pygame.image.load('img/ground.png')
 button_img = pygame.image.load('img/restart.png')
@@ -42,7 +46,6 @@ button_img = pygame.image.load('img/restart.png')
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
-
 
 # Defining class that will describe birds that will play game
 
@@ -98,7 +101,6 @@ class Bird(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(
                 self.images[self.index], self.vel * -2)
 
-
 # Class for defining obstacles
 
 
@@ -110,9 +112,9 @@ class Pipe(pygame.sprite.Sprite):
 
         if position == 1:
             self.image = pygame.transform.flip(self.image, False, True)
-            self.rect.bottomleft = [x, y - pipe_gap // 2]
+            self.rect.bottomleft = [x, y-pipe_gap//2]
         else:
-            self.rect.topleft = [x, y + pipe_gap // 2]
+            self.rect.topleft = [x, y+pipe_gap//2]
 
     def update(self):
         self.rect.x -= scroll_speed
@@ -140,10 +142,11 @@ class Button():
 
         return action
 
-
 # Class whose objects will be specimen of a neural network model specified to a specific bird
+
+
 class Specimen:
-    def _init_(self):
+    def __init__(self):
         self.NINPUTS = 8
         self.NOUTPUTS = 1
         self.NHIDDEN = 1
@@ -248,13 +251,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--action', help='learn, play, showtime')
 args = parser.parse_args()
 
-# Parsing arguements
-parser = argparse.ArgumentParser()
-parser.add_argument('--action', help='learn, play, showtime')
-args = parser.parse_args()
 
 # Block where model trains
 if args.action == 'learn':
+
     fps=120
 
     def reset_game():
@@ -388,7 +388,6 @@ if args.action == 'learn':
         pickle.dump(best, file)
 
     pygame.quit()
-    print('Learning....')
 
 # Block where user plays the game
 elif args.action == 'play':
@@ -402,14 +401,13 @@ elif args.action == 'play':
         score = 0
         return score
 
-
     bird_group = pygame.sprite.Group()
     pipe_group = pygame.sprite.Group()
 
-    flappy = Bird(100, screen_height // 2)
+    flappy = Bird(100, screen_height//2)
     bird_group.add(flappy)
 
-    button = Button(screen_width // 2 - 50, screen_height // 2 - 100, button_img)
+    button = Button(screen_width//2-50, screen_height//2-100, button_img)
 
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption('Flappy Bird')
@@ -440,9 +438,9 @@ elif args.action == 'play':
             pipe_height = randint(-100, 100)
 
             time_now = pygame.time.get_ticks()
-            if time_now - last_pipe > pipe_frequency:
-                pipe1 = Pipe(screen_width, screen_height // 2 + pipe_height, 1)
-                pipe2 = Pipe(screen_width, screen_height // 2 + pipe_height, -1)
+            if time_now-last_pipe > pipe_frequency:
+                pipe1 = Pipe(screen_width, screen_height//2+pipe_height, 1)
+                pipe2 = Pipe(screen_width, screen_height//2+pipe_height, -1)
                 pipe_group.add(pipe1)
                 pipe_group.add(pipe2)
                 last_pipe = time_now
@@ -457,15 +455,14 @@ elif args.action == 'play':
             flappy.flying = False
 
         if len(pipe_group) > 0:
-            if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left and bird_group.sprites()[
-                0].rect.right < pipe_group.sprites()[0].rect.right:
+            if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right:
                 pass_pipe = True
             if pass_pipe == True:
                 if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
                     score += 1
                     pass_pipe = False
 
-        draw_text(str(score), FONT, WHITE, screen_width // 2, 50)
+        draw_text(str(score), FONT, WHITE, screen_width//2, 50)
 
         if game_over == True:
             if button.draw() == True:
@@ -487,8 +484,7 @@ elif args.action == 'play':
 
 # Block where trained model plays the game
 elif args.action == 'showtime':
-    print('Starting bot....')
-
+    print("Bot")
 else:
     print('Error')
     exit(0)
